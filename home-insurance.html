@@ -585,9 +585,190 @@
     color: var(--ink-soft);
     line-height: 1.6;
   }
+  /* ---------- Password gate ---------- */
+  .gate {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+  }
+  .gate::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.08 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    opacity: 0.5;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+  .gate-inner {
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+  .gate-eyebrow {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 24px;
+  }
+  .gate-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: clamp(32px, 4vw, 42px);
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    margin-bottom: 20px;
+  }
+  .gate-title em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .gate-sub {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin-bottom: 32px;
+  }
+  .gate-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .gate-input {
+    width: 100%;
+    padding: 16px 20px;
+    border: 1px solid var(--hair);
+    border-radius: 12px;
+    background: var(--bg-soft);
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .gate-input:focus {
+    border-color: var(--accent);
+    background: #FFF;
+  }
+  .gate-input::placeholder {
+    color: var(--ink-muted);
+  }
+  .gate-btn {
+    padding: 16px 24px;
+    border-radius: 12px;
+    background: var(--ink);
+    color: var(--bg);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    letter-spacing: 0.01em;
+  }
+  .gate-btn:hover { background: var(--accent); }
+  .gate-btn:active { transform: scale(0.98); }
+  .gate-error {
+    font-size: 14px;
+    color: var(--accent);
+    min-height: 20px;
+    margin-top: 4px;
+  }
+  .gate-hint {
+    margin-top: 24px;
+    font-size: 13px;
+    color: var(--ink-muted);
+    line-height: 1.5;
+  }
+  .gate-hint a {
+    color: var(--ink);
+    border-bottom: 1px solid var(--hair);
+    transition: border-color 0.2s;
+  }
+  .gate-hint a:hover { border-bottom-color: var(--accent); }
+  /* Hide the page while gate is showing */
+  body.locked .page { display: none; }
 </style>
 </head>
-<body>
+<body class="locked">
+
+<!-- Password gate -->
+<div class="gate" id="gate">
+  <div class="gate-inner">
+    <div class="gate-eyebrow">Case study · Protected</div>
+    <h1 class="gate-title">A small <em>password</em> to read on.</h1>
+    <p class="gate-sub">
+      This case study contains work from Marshmallow, so I've kept it behind a simple password.
+      If you're here from an application or email from me, it'll be included there.
+    </p>
+    <form class="gate-form" id="gate-form">
+      <input
+        type="password"
+        class="gate-input"
+        id="gate-input"
+        placeholder="Password"
+        autocomplete="off"
+        autofocus
+      />
+      <button type="submit" class="gate-btn">Enter</button>
+      <div class="gate-error" id="gate-error"></div>
+    </form>
+    <p class="gate-hint">
+      Don't have a password? <a href="mailto:nabronovski@gmail.com">Get in touch</a>
+      and I'll send one over.
+    </p>
+  </div>
+</div>
+
+<script>
+  (function() {
+    var PASSWORD = 'natalia2026';
+    var STORAGE_KEY = 'nb_case_study_unlock';
+
+    function unlock() {
+      document.body.classList.remove('locked');
+      var gate = document.getElementById('gate');
+      if (gate) gate.style.display = 'none';
+    }
+
+    // Check if already unlocked in this browser session
+    try {
+      if (sessionStorage.getItem(STORAGE_KEY) === 'yes') {
+        unlock();
+        return;
+      }
+    } catch (e) { /* sessionStorage may be blocked */ }
+
+    var form = document.getElementById('gate-form');
+    var input = document.getElementById('gate-input');
+    var error = document.getElementById('gate-error');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var value = (input.value || '').trim().toLowerCase();
+      if (value === PASSWORD) {
+        try { sessionStorage.setItem(STORAGE_KEY, 'yes'); } catch (e) {}
+        unlock();
+      } else {
+        error.textContent = 'Hmm, that doesn\u2019t look right. Try again?';
+        input.value = '';
+        input.focus();
+      }
+    });
+  })();
+</script>
+
 <div class="page">
 
   <!-- NAV -->
