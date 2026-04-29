@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>So Energy — Energy Usage App · Natalia Bronovski</title>
+<meta name="description" content="A design exploration for the So Energy customer account — letting customers track usage, submit meter readings, and manage payments on the go." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #F2ECE0;
+    --bg-soft: #EDE5D5;
+    --ink: #1A1613;
+    --ink-soft: #3A342E;
+    --ink-muted: #6B6157;
+    --accent: #B8472F;
+    --accent-soft: #D9967F;
+    --hair: rgba(26, 22, 19, 0.14);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink-soft);
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.005em;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.08 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    opacity: 0.5;
+    z-index: 1;
+    mix-blend-mode: multiply;
+  }
+
+  .page { position: relative; z-index: 2; }
+
+  a { color: var(--ink); text-decoration: none; }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 32px; }
+  .wrap-narrow { max-width: 720px; margin: 0 auto; padding: 0 32px; }
+
+  /* ---------- Nav ---------- */
+  nav {
+    padding: 32px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .logo {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 20px;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a {
+    font-size: 14px;
+    color: var(--ink-muted);
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--ink); }
+
+  /* ---------- Header ---------- */
+  .header {
+    padding: 64px 0 56px;
+  }
+  .eyebrow {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 32px;
+    display: inline-block;
+  }
+  .header h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: clamp(40px, 5.5vw, 64px);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    margin-bottom: 32px;
+    max-width: 18ch;
+  }
+  .header h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+  }
+
+  /* meta strip */
+  .meta {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 48px;
+    padding: 32px 0;
+    border-top: 1px solid var(--hair);
+    border-bottom: 1px solid var(--hair);
+  }
+  .meta-item .label {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+  .meta-item .value {
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    color: var(--ink);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+  @media (max-width: 720px) {
+    .meta { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  }
+
+  /* ---------- Gallery ---------- */
+  .gallery {
+    padding: 80px 0 96px;
+  }
+  .gallery-item {
+    margin-bottom: 24px;
+    background: var(--ink);
+    border-radius: 16px;
+    overflow: hidden;
+    line-height: 0;
+    box-shadow: 0 20px 50px -20px rgba(26, 22, 19, 0.2);
+  }
+  .gallery-item img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  /* The first item (the cover) is clearly a hero — slightly more breathing room */
+  .gallery-item.hero { margin-bottom: 32px; }
+
+  /* Footer / Next case study */
+  footer {
+    background: var(--ink);
+    color: var(--bg);
+    padding: 80px 0 40px;
+  }
+  .footer-up {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(28px, 3.5vw, 40px);
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    margin-bottom: 64px;
+    max-width: 22ch;
+    color: var(--bg);
+  }
+  .footer-up a {
+    color: var(--bg);
+    border-bottom: 1px solid rgba(242, 236, 224, 0.3);
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .footer-up a:hover {
+    border-bottom-color: var(--accent-soft);
+    color: var(--accent-soft);
+  }
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 32px;
+    border-top: 1px solid rgba(242, 236, 224, 0.15);
+    font-size: 13px;
+    color: rgba(242, 236, 224, 0.6);
+  }
+
+  /* ---------- Entrance ---------- */
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .rise { animation: rise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  .rise-1 { animation-delay: 0.05s; }
+  .rise-2 { animation-delay: 0.2s; }
+  .rise-3 { animation-delay: 0.35s; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- NAV -->
+  <div class="wrap">
+    <nav>
+      <a href="/" class="logo">Natalia Bronovski</a>
+      <div class="nav-links">
+        <a href="/#work">Work</a>
+        <a href="/#about">About</a>
+        <a href="/#contact">Contact</a>
+      </div>
+    </nav>
+  </div>
+
+  <!-- HEADER -->
+  <div class="wrap">
+    <section class="header">
+      <div class="eyebrow rise rise-1">Concept · So Energy · Oct 2023</div>
+      <h1 class="rise rise-2">
+        Manage your energy <em>on the go.</em>
+      </h1>
+
+      <div class="meta rise rise-3">
+        <div class="meta-item">
+          <div class="label">Project</div>
+          <div class="value">Customer account redesign</div>
+        </div>
+        <div class="meta-item">
+          <div class="label">Role</div>
+          <div class="value">Lead Designer (end-to-end)</div>
+        </div>
+        <div class="meta-item">
+          <div class="label">Type</div>
+          <div class="value">Design exploration</div>
+        </div>
+        <div class="meta-item">
+          <div class="label">Date</div>
+          <div class="value">October 2023</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- GALLERY -->
+  <div class="wrap">
+    <section class="gallery">
+      <div class="gallery-item hero">
+        <img src="images/so-energy-01.png" alt="Manage your energy on the go — cover image" loading="eager" />
+      </div>
+      <div class="gallery-item">
+        <img src="images/so-energy-02.png" alt="Two phones showing the home screen and balance overview" loading="lazy" />
+      </div>
+      <div class="gallery-item">
+        <img src="images/so-energy-03.png" alt="So Energy logo across multiple brand colours" loading="lazy" />
+      </div>
+      <div class="gallery-item">
+        <img src="images/so-energy-04.png" alt="Take control of your usage — feature breakdown showing usage screens for electricity and gas" loading="lazy" />
+      </div>
+      <div class="gallery-item">
+        <img src="images/so-energy-05.png" alt="Manage your balance and statements — feature title slide" loading="lazy" />
+      </div>
+      <div class="gallery-item">
+        <img src="images/so-energy-06.png" alt="Manage your balance and statements — screens for viewing bills, payments and statements" loading="lazy" />
+      </div>
+      <div class="gallery-item">
+        <img src="images/so-energy-07.png" alt="Meter reading reminders — lockscreen notification for submitting readings" loading="lazy" />
+      </div>
+      <div class="gallery-item">
+        <img src="images/so-energy-08.png" alt="Switch to dark mode — light and dark mode comparison" loading="lazy" />
+      </div>
+      <div class="gallery-item">
+        <img src="images/so-energy-09.png" alt="Multi-phone array showcasing the variety of screens across the app" loading="lazy" />
+      </div>
+      <div class="gallery-item">
+        <img src="images/so-energy-10.png" alt="Thank you closing slide" loading="lazy" />
+      </div>
+    </section>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="wrap">
+      <div class="footer-up">
+        Want the deep dive? See the <a href="home-insurance.html">home insurance launch</a> case study →
+      </div>
+      <div class="footer-bottom">
+        <div>© 2026 Natalia Bronovski</div>
+        <div style="display: flex; gap: 24px;">
+          <a href="mailto:nabronovski@gmail.com" style="color: rgba(242, 236, 224, 0.7); border: none;">Email</a>
+          <a href="/" style="color: rgba(242, 236, 224, 0.7); border: none;">Back to work</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
